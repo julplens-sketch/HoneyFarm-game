@@ -9,26 +9,29 @@
 <style>
 body{background:#FFEB3B;font-family:Arial;padding:12px;margin:0}
 .card{background:white;border-radius:16px;padding:16px;margin-bottom:12px;text-align:center}
-.btn{width:100%;padding:14px;border:none;border-radius:12px;font-weight:bold;font-size:16px;margin-top:8px;cursor:pointer}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-weight:bold;font-size:15px;margin-top:8px;cursor:pointer}
 .btn-yellow{background:#FFC107}
 .btn-green{background:#4CAF50;color:white}
 .btn-purple{background:#9C27B0;color:white}
 .btn-blue{background:#2196F3;color:white}
+.btn-orange{background:#FF9800;color:white}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
 .modalBox{background:white;border-radius:16px;padding:20px;width:100%;max-width:320px;text-align:center}
 input{width:100%;padding:12px;border:2px solid #FFC107;border-radius:8px;font-size:16px;box-sizing:border-box;margin:8px 0}
 #wheel{width:240px;height:240px;border-radius:50%;border:8px solid #FFC107;background:conic-gradient(#FFEB3B 0deg 60deg,#FFC107 60deg 120deg,#FF9800 120deg 180deg,#4CAF50 180deg 240deg,#9C27B0 240deg 300deg,#E91E63 300deg 360deg);transition:transform 3s ease-out;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.invite-box{background:#FFF9C4;border:2px dashed #FFC107;padding:12px;border-radius:12px;margin-top:10px;word-break:break-all;font-size:12px}
 </style>
 </head>
 <body>
 <div class="card">
 <h2>🍯 HoneyFarm 🐝</h2>
-<h1 id="honeyCount">Loading...</h1>
+<h1 id="honeyCount">0 🍯</h1>
 <p id="infoText">10M = 10 GCash</p>
-<button id="adBtn" class="btn btn-yellow" onclick="watchAdForHoney()">📺 Watch Ad +20k Honey</button>
+<button class="btn btn-yellow" onclick="watchAdForHoney()">📺 Watch Ad +20k Honey</button>
 <button class="btn btn-green" onclick="farmHoney()">👆 Farm +10 Honey</button>
 <button class="btn btn-purple" onclick="openWheel()">🎡 Spin Wheel - Win 100k!</button>
 <button class="btn btn-blue" onclick="openConvert()">💰 Convert 10M = 10 GCash</button>
+<button class="btn btn-orange" onclick="openInvite()">👥 Invite Friends +50k!</button>
 </div>
 
 <div id="wheelModal" class="modal"><div class="modalBox"><div id="wheel">🍯</div><h3 id="wheelResult">SPIN NOW!</h3><button class="btn btn-purple" id="spinBtn" onclick="spinWheel()">🎡 SPIN (2k)</button><button class="btn" style="background:#eee" onclick="closeWheel()">Close</button></div></div>
@@ -45,104 +48,83 @@ input{width:100%;padding:12px;border:2px solid #FFC107;border-radius:8px;font-si
 <div id="withdrawHistory" style="font-size:11px;margin-top:8px"></div>
 </div></div>
 
+<div id="inviteModal" class="modal"><div class="modalBox">
+<h2>👥 Invite Friends</h2>
+<p><b>+50,000 Honey</b> per invite!<br>Imo friend +20k pud!</p>
+<p>Invites: <b id="inviteCount">0</b> | Total Bonus: <b id="inviteBonus">0</b></p>
+<div class="invite-box" id="inviteLink">Loading link...</div>
+<button class="btn btn-orange" onclick="copyInvite()">📋 Copy Invite Link</button>
+<button class="btn btn-green" onclick="shareInvite()">📤 Share to Friends</button>
+<p style="font-size:11px;margin-top:10px">Pag naay mo click sa imong link ug mo play, automatic +50k sa imo!</p>
+<button class="btn" style="background:#eee" onclick="closeInvite()">Close</button>
+</div></div>
+
 <script>
-// ===== FIX MAWALA - BAG-ONG KEY =====
+// ===== HONEY - DILI NA MAWALA =====
 const KEY = 'honeyfarm_v2_honey';
 function loadHoney(){
   let v = localStorage.getItem(KEY);
-  if(v && !isNaN(v) && parseInt(v) > 1000){
+  if(v && !isNaN(v) && parseInt(v) > 100){
     return parseInt(v);
   }
-  // backup gikan daan
   let old = localStorage.getItem('honey');
-  if(old && !isNaN(old) && parseInt(old) > 1000){
+  if(old && !isNaN(old) && parseInt(old) > 100){
     return parseInt(old);
   }
-  return 393383;
+  return 687393;
 }
 let honey = loadHoney();
 let withdrawals = JSON.parse(localStorage.getItem('honeyfarm_withdraw')||'[]');
+let invites = JSON.parse(localStorage.getItem('honeyfarm_invites')||'[]');
 
 function save(){
   localStorage.setItem(KEY, honey.toString());
   localStorage.setItem('honeyfarm_withdraw', JSON.stringify(withdrawals));
+  localStorage.setItem('honeyfarm_invites', JSON.stringify(invites));
   updateUI();
 }
-
-function addHoney(n){
-  honey += n;
-  save();
-}
-
+function addHoney(n){ honey += n; save(); }
 function farmHoney(){ addHoney(10); }
-
 function updateUI(){
   document.getElementById('honeyCount').innerText = honey.toLocaleString() + " 🍯";
   document.getElementById('infoText').innerText = Math.floor(honey/1000000) + " GCash value | 10M = 10 GCash | Top 1: 1k GCASH";
   let el = document.getElementById('myHoneyConvert');
   if(el) el.innerText = honey.toLocaleString();
+  document.getElementById('inviteCount').innerText = invites.length;
+  document.getElementById('inviteBonus').innerText = (invites.length*50000).toLocaleString();
   let h = document.getElementById('withdrawHistory');
   if(h && withdrawals.length>0){
     h.innerHTML = withdrawals.slice(-3).map(w=> w.honey.toLocaleString() + " → " + w.gcash + " GCash").join("<br>");
   }
 }
 
-let AdController=null;
-try{ AdController=window.Adsgram.init({blockId:"int-57059"});}catch(e){}
-
-async function watchAdForHoney(){
-  let b=document.getElementById('adBtn');
-  b.disabled=true; b.innerText=' Loading Ad...';
-  try{ if(AdController) await AdController.show(); }catch(e){}
-  addHoney(20000);
-  b.disabled=false; b.innerText='📺 Watch Ad +20k Honey';
+// ===== INVITE SYSTEM =====
+function getUserId(){
+  try{
+    if(window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user){
+      return Telegram.WebApp.initDataUnsafe.user.id;
+    }
+  }catch(e){}
+  let savedId = localStorage.getItem('my_telegram_id');
+  if(savedId) return savedId;
+  let newId = 'user_' + Math.floor(Math.random()*1000000);
+  localStorage.setItem('my_telegram_id', newId);
+  return newId;
 }
-
-function openWheel(){ document.getElementById('wheelModal').style.display='flex'; }
-function closeWheel(){ document.getElementById('wheelModal').style.display='none'; }
-
-let spinning=false;
-function spinWheel(){
-  if(spinning) return;
-  if(honey < 2000){ alert("Kulang 2k honey!"); return; }
-  spinning=true;
-  honey-=2000; save();
-  let btn=document.getElementById('spinBtn'); btn.disabled=true; btn.innerText=' Spinning...';
-  let rewards=[1000,5000,10000,20000,50000,100000];
-  let win = rewards[Math.floor(Math.random()*rewards.length)];
-  let rot = 1800 + Math.random()*360;
-  document.getElementById('wheel').style.transform = 'rotate('+rot+'deg)';
-  setTimeout(()=>{
-    addHoney(win);
-    document.getElementById('wheelResult').innerText = 'WIN +'+win.toLocaleString()+'!';
-    btn.disabled=false; btn.innerText='SPIN AGAIN (2k)';
-    spinning=false;
-  },3000);
+function openInvite(){
+  document.getElementById('inviteModal').style.display='flex';
+  let uid = getUserId();
+  let link = 'https://t.me/Honeyfarmget_bot?start=' + uid;
+  document.getElementById('inviteLink').innerText = link;
+  checkInviteReward();
 }
-
-function openConvert(){ document.getElementById('convertModal').style.display='flex'; document.getElementById('convertInput').oninput=calcConvert; updateUI(); }
-function closeConvert(){ document.getElementById('convertModal').style.display='none'; }
-function calcConvert(){
-  let h=parseInt(document.getElementById('convertInput').value||0);
-  document.getElementById('gcashPreview').innerText = Math.floor(h/1000000) + " GCash";
+function closeInvite(){ document.getElementById('inviteModal').style.display='none'; }
+function copyInvite(){
+  let txt = document.getElementById('inviteLink').innerText;
+  navigator.clipboard.writeText(txt).then(()=> alert("Na copy na boss! Send sa friends!"));
 }
-function doConvert(){
-  let h=parseInt(document.getElementById('convertInput').value||0);
-  let num=document.getElementById('gcashNum').value;
-  if(h < 1000000){ alert("Min 1M = 1 GCash boss"); return; }
-  if(h > honey){ alert("Kulang honey! " + honey.toLocaleString() + " lang"); return; }
-  if(!num || num.length < 11){ alert("GCash number boss!"); return; }
-  let gcash = Math.floor(h/1000000);
-  if(!confirm(h.toLocaleString() + " = " + gcash + " GCash to " + num + "?")) return;
-  honey -= h;
-  withdrawals.push({honey:h, gcash:gcash, number:num, date:new Date().toLocaleString()});
-  save();
-  alert("Success! " + gcash + " GCash pending to " + num);
-  closeConvert();
-}
-
-updateUI();
-if(window.Telegram && Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
-</script>
-</body>
-</html>
+function shareInvite(){
+  let txt = document.getElementById('inviteLink').innerText;
+  let msg = "🍯 Play HoneyFarm! 10M = 10 GCash! " + txt;
+  if(window.Telegram && Telegram.WebApp){
+    Telegram.WebApp.openTelegram
