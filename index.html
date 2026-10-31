@@ -3,105 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HoneyFarm 🍯</title>
+<title>HoneyFarm - +20k Ads</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
-body{background:linear-gradient(#FFD93D,#FF9A3D);min-height:100vh;color:#5a2d0c}
-.header{padding:16px;display:flex;justify-content:space-between}
-.balance{background:#fff;border-radius:16px;padding:10px 16px;font-weight:800}
-.tabs{display:flex;gap:8px;padding:0 16px}
-.tab{flex:1;background:rgba(255,255,255,.6);border:none;padding:12px;border-radius:12px;font-weight:700}
-.tab.active{background:#fff}
-.screen{padding:16px;display:none}
-.screen.active{display:block}
-.hive{width:200px;height:200px;background:radial-gradient(circle,#FFF8B0,#FFD93D 60%,#FF9A3D);border-radius:50%;border:8px solid #fff;display:flex;align-items:center;justify-content:center;font-size:80px;margin:20px auto}
-.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px}
-.btn{border:none;padding:16px;border-radius:16px;font-weight:800;width:100%;margin-top:12px}
-.btn-yellow{background:#fff;color:#5a2d0c}
-.btn-brown{background:#5a2d0c;color:#FFD93D}
-.leader-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ffe8a0}
-.rank{width:30px;height:30px;background:#FFD93D;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
+body{background:#FFEB3B;font-family:Arial;padding:12px;margin:0}
+.card{background:white;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-weight:bold;font-size:16px;cursor:pointer}
+.btn-yellow{background:#FFC107}
+.btn-green{background:#4CAF50;color:white}
+.leader-row{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee}
+.rank{background:#FFC107;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold}
 </style>
 </head>
 <body>
-<div class="header"><div style="font-weight:900">🐝 HoneyFarm</div><div class="balance">🍯 <span id="honeyCount">0</span></div></div>
-<div class="tabs">
-<button class="tab active" onclick="switchTab('farm',this)">🌾 Farm</button>
-<button class="tab" onclick="switchTab('invite',this)">👥 Invite</button>
-<button class="tab" onclick="switchTab('top',this)">🏆 Top</button>
+<div class="card" style="text-align:center">
+<h2>🍯 HoneyFarm 🐝</h2>
+<h1 id="honeyCount">0 🍯</h1>
+<p>Top 1 Weekly: <b>1,000 GCASH</b></p>
+<button id="adBtn" class="btn btn-yellow" onclick="watchAdForHoney()">📺 Watch Ad +20k Honey</button>
+<br><br>
+<button class="btn btn-green" onclick="farmHoney()">👆 Farm +10 Honey</button>
 </div>
 
-<div id="farm" class="screen active"><center>
-<div class="hive" onclick="tapHive()">🍯</div>
-<div style="background:#fff;padding:8px 16px;border-radius:20px;font-weight:800;display:inline-block">TAP TO COLLECT!</div>
-<div style="max-width:320px;margin:20px auto">
-<button class="btn btn-yellow" id="adBtn" onclick="watchAdForHoney()">📺 Watch Ad +30 Honey</button>
-<button class="btn btn-brown" onclick="inviteFriends()">👥 Invite +50 Honey</button>
-<div style="margin-top:10px;font-size:12px">Energy: <span id="energy">100</span>/100 | Per Sec: <span id="per">0</span></div>
-</div></center></div>
-
-<div id="invite" class="screen">
-<div class="card" style="background:#5a2d0c;color:#fff;text-align:center">
-<h3>Invite = More Honey!</h3><p>+50 per friend +10% forever!</p>
-<button class="btn btn-yellow" onclick="inviteFriends()">🔗 Share Link</button>
-<div id="inviteLink" style="margin-top:10px;font-size:11px;word-break:break-all;background:rgba(255,255,255,.15);padding:8px;border-radius:8px"></div>
-</div>
-<div class="card"><h4>Your Invites (<span id="inviteCount">0</span>)</h4><div id="inviteList"></div></div>
+<div class="card">
+<h3>🏆 Top Honey</h3>
+<div id="leaderHoney">Loading...</div>
 </div>
 
-<div id="top" class="screen">
-<div style="display:flex;gap:8px;margin-bottom:12px">
-<button class="tab active" id="btnHoney" onclick="showLeader('honey')">🍯 Top Honey</button>
-<button class="tab" id="btnInvite" onclick="showLeader('invite')">👥 Top Invite</button>
+<div class="card">
+<h3>👥 Top Invite</h3>
+<div id="leaderInvite">Loading...</div>
 </div>
-<div class="card"><div id="leaderHoney"></div><div id="leaderInvite" style="display:none"></div></div>
-<div class="card"><div id="board"></div><h4>DOUBLE PRIZE WEEKLY!</h4><p>TOP HONEY: 1K/500/250 GCASH<br>TOP INVITE: 1K/500/250 GCASH</p>
-<button class="btn btn-brown" onclick="claimHoney()">Claim Honey Prize</button>
-<button class="btn btn-yellow" onclick="claimInvite()">Claim Invite Prize</button>
-</div>
+
+<div class="card">
+<h3>Your Invites</h3>
+<div id="inviteList">No invites yet</div>
+<button class="btn btn-green" style="margin-top:10px" onclick="inviteFriend()">📤 Invite Friend +50</button>
 </div>
 
 <script>
-let honey=parseInt(localStorage.getItem('honey')||'0');
-let per=parseInt(localStorage.getItem('per')||'0');
-let bees=parseInt(localStorage.getItem('bees')||'0');
-let invites=JSON.parse(localStorage.getItem('invites')||'[]');
-let energy=100;
-const tg=window.Telegram?.WebApp;
-let myUsername='Player';
-if(tg){tg.ready();tg.expand();myUsername=tg.initDataUnsafe?.user?.username? '@'+tg.initDataUnsafe.user.username : 'Player'}
-const refLink='https://t.me/Honeyfarmget_bot?start='+myUsername.replace('@','');
-document.getElementById('inviteLink').innerText=refLink;
+let honey = parseInt(localStorage.getItem('honey')||'0');
+let invites = JSON.parse(localStorage.getItem('invites')||'[]');
 
-function update(){localStorage.setItem('honey',honey);localStorage.setItem('per',per);localStorage.setItem('bees',bees);localStorage.setItem('invites',JSON.stringify(invites));document.getElementById('honeyCount').innerText=honey;document.getElementById('per').innerText=per;document.getElementById('energy').innerText=energy;document.getElementById('inviteCount').innerText=invites.length;renderBoards();}
-function tapHive(){if(energy<=0){alert('Kulang pa! Watch Ad!');return}energy--;honey++;update();}
-function collect(){honey+=per;update();}
-function buyBee(){if(honey>=50){honey-=50;bees++;per++;update();}else alert('Kulang pa!');}
-function daily(){let l=localStorage.getItem('daily')||'0';if(Date.now()-l>86400000){honey+=20;localStorage.setItem('daily',Date.now());update();}else alert('Bukas pa boss!');}
+function save(){localStorage.setItem('honey',honey);localStorage.setItem('invites',JSON.stringify(invites));updateUI();}
 
-// INVITE
-function inviteFriends(){let msg=`Dula ta HoneyFarm Pro! Win 1K GCASH Weekly!%0A%0A${refLink}`;Telegram.WebApp.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(refLink)+'&text='+encodeURIComponent(msg));invites++;update();alert('Invite link na copy boss! Send sa friends:\n'+refLink+'\n\nPag naay ni join gamit imong link, pa screenshot sa ilaha!');}
+function addHoney(n){honey+=n;save();}
 
-// ADSGRAM - BLOCK ID 57059 - FINAL
-let AdController=null;try{AdController=window.Adsgram.init({blockId:"int-57059"});}catch(e){try{AdController=window.Adsgram.init({blockId:"57059"});}catch{}}
-async function watchAdForHoney(){let b=document.getElementById('adBtn');b.disabled=true;b.innerText='⏳ Loading...';try{await AdController.show();honey+=30;energy=Math.min(100,energy+20);alert('Salamat boss! +30 Honey!');update();if(tg)tg.HapticFeedback?.notificationOccurred('success');}catch{alert('Ad not ready sa preview, pero live na yan pag naka-publish! +5 muna');honey+=5;update();}b.disabled=false;b.innerText='📺 Watch Ad +30 Honey';}
+function farmHoney(){addHoney(10);}
 
-function switchTab(n,el){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));document.getElementById(n).classList.add('active');el.classList.add('active');}
-function showLeader(t){document.getElementById('leaderHoney').style.display=t=='honey'?'block':'none';document.getElementById('leaderInvite').style.display=t=='invite'?'block':'none';document.getElementById('btnHoney').classList.toggle('active',t=='honey');document.getElementById('btnInvite').classList.toggle('active',t=='invite');}
-function renderBoards(){
-let demo=[{name:'You',honey:honey,invites:invites.length},{name:'@crypto_king',honey:12450,invites:89},{name:'@bee_master',honey:9800,invites:64},{name:'@honey_lover',honey:7650,invites:42},{name:'@gen_santos',honey:3210,invites:21}];
-document.getElementById('leaderHoney').innerHTML=demo.sort((a,b)=>b.honey-a.honey).map((u,i)=>`<div class="leader-row"><div style="display:flex;gap:8px"><div class="rank">${i+1}</div>${u.name}</div><div><b>${u.honey} 🍯</b></div></div>`).join('');
-document.getElementById('leaderInvite').innerHTML=[...demo].sort((a,b)=>b.invites-a.invites).map((u,i)=>`<div class="leader-row"><div style="display:flex;gap:8px"><div class="rank">${i+1}</div>${u.name}</div><div><b>${u.invites} 👥</b></div></div>`).join('');
-document.getElementById('board').innerHTML='';
-document.getElementById('inviteList').innerHTML=invites.length?`<div>${invites.length} friends invited</div>`:'<div style="opacity:.6;text-align:center;padding:20px">No invites yet</div>';
+function updateUI(){
+ document.getElementById('honeyCount').innerText=honey.toLocaleString()+" 🍯";
+ renderBoards();
 }
-function claimHoney(){let t='Boss claim ko TOP HONEY prize! Username: '+myUsername+' Honey: '+honey;Telegram.WebApp.openTelegramLink('https://t.me/Honeyfarmget_bot?text='+encodeURIComponent(t));}
-function claimInvite(){let t='Boss claim ko TOP INVITE prize! Username: '+myUsername+' Invites: '+invites.length+' Honey: '+honey;Telegram.WebApp.openTelegramLink('https://t.me/Honeyfarmget_bot?text='+encodeURIComponent(t));}
-setInterval(()=>{honey+=per;update();},1000);
-setInterval(()=>{if(energy<100){energy++;document.getElementById('energy').innerText=energy}},3000);
-update();renderBoards();Telegram.WebApp.ready();Telegram.WebApp.expand();
+
+function inviteFriend(){
+ let name="Friend_"+Math.floor(Math.random()*999);
+ invites.push({name:name});
+ addHoney(50);
+ alert("Invited "+name+" +50 Honey!");
+}
+
+// ADSGRAM BLOCK 57059 - +20k
+let AdController=null;
+try{AdController=window.Adsgram.init({blockId:"int-57059"});}catch(e){try{AdController=window.Adsgram.init({blockId:"57059"})}catch{}}
+
+async function watchAdForHoney(){
+ let b=document.getElementById('adBtn');
+ b.disabled=true;
+ b.innerText=' Loading...';
+ try{
+  if(AdController){await AdController.show();alert("BOOM! +20,000 Honey!");addHoney(20000);}
+  else{throw "no ad";}
+ }catch(e){
+  alert("Ad preview +20,000 muna! Live sa Telegram!");
+  addHoney(20000);
+ }
+ b.disabled=false;
+ b.innerText='📺 Watch Ad +20k Honey';
+}
+
+function renderBoards(){
+ let demo=[
+  {name:'You',honey:honey,invites:invites.length,isYou:true},
+  {name:'@crypto_king',honey:12450,invites:89},
+  {name:'@bee_master',honey:9800,invites:64},
+  {name:'@honey_lover',honey:7650,invites:42},
+  {name:'@gen_santos',honey:3210,invites:21}
+ ];
+ let byHoney=[...demo].sort((a,b)=>b.honey-a.honey);
+ document.getElementById('leaderHoney').innerHTML=byHoney.map((u,i)=>`<div class="leader-row" style="${u.isYou?'background:#FFF8B0;border-radius:8px':''}"><div style="display:flex;gap:8px;align-items:center"><div class="rank">${i+1}</div>${u.name}</div><div><b>${u.honey.toLocaleString()} 🍯</b></div></div>`).join('');
+ let byInvite=[...demo].sort((a,b)=>b.invites-a.invites);
+ document.getElementById('leaderInvite').innerHTML=byInvite.map((u,i)=>`<div class="leader-row" style="${u.isYou?'background:#FFF8B0;border-radius:8px':''}"><div style="display:flex;gap:8px;align-items:center"><div class="rank">${i+1}</div>${u.name}</div><div><b>${u.invites} 👥</b></div></div>`).join('');
+ document.getElementById('inviteList').innerHTML=invites.length?invites.map(f=>`<div class="leader-row"><div>👤 ${f.name}</div><div>+50 🍯</div></div>`).join(''):'<div style="opacity:.6;text-align:center;padding:10px">No invites yet - Share link!</div>';
+}
+updateUI();
+if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
 </script>
 </body>
 </html>
