@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HoneyFarm 🍯 PER ACCOUNT</title>
+<title>HoneyFarm 🍯 ADS LIVE</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
@@ -25,7 +25,7 @@ input{width:100%;padding:12px;border:2px solid #FFC107;border-radius:8px;font-si
 </head>
 <body>
 <div class="card">
-<h2>🍯 HoneyFarm 🐝</h2>
+<h2>🍯 HoneyFarm ADS LIVE 🐝</h2>
 <h3 id="userIdDisplay" style="font-size:11px;color:#888">Loading...</h3>
 <h1 id="honeyCount">0 🍯</h1>
 <p id="infoText" style="font-size:12px">0 GCash | Min 50 GCash | Top 1: 1k</p>
@@ -51,23 +51,8 @@ input{width:100%;padding:12px;border:2px solid #FFC107;border-radius:8px;font-si
 <div id="leaderboardModal" class="modal"><div class="modalBox"><h2>🏆 Leaderboard</h2><div id="leaderboardList" style="text-align:left;max-height:300px;overflow:auto;"></div><button class="btn" style="background:#eee" onclick="closeLeaderboard()">Close</button></div></div>
 
 <script>
-// PER TELEGRAM ACCOUNT - LAHI ANG HONEY PER USER!
-function getUserId(){
-  try{
-    if(window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user){
-      return 'tg_'+Telegram.WebApp.initDataUnsafe.user.id;
-    }
-  }catch(e){}
-  let s=localStorage.getItem('my_telegram_id');
-  if(s) return s;
-  let n='user_'+Math.floor(Math.random()*1000000);
-  localStorage.setItem('my_telegram_id',n);
-  return n;
-}
-
-const USER_ID = getUserId();
-
-// PER USER KEYS - DILI NA PAREHA!
+function getUserId(){try{if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user) return 'tg_'+Telegram.WebApp.initDataUnsafe.user.id;}catch(e){} let s=localStorage.getItem('my_telegram_id'); if(s) return s; let n='user_'+Math.floor(Math.random()*1000000); localStorage.setItem('my_telegram_id',n); return n;}
+const USER_ID=getUserId();
 const KEY='honeyfarm_'+USER_ID+'_honey';
 const KEY_WITHDRAW='honeyfarm_'+USER_ID+'_withdraw';
 const KEY_INVITES='honeyfarm_'+USER_ID+'_invites';
@@ -76,19 +61,7 @@ const KEY_QUESTS='honeyfarm_'+USER_ID+'_quests';
 const KEY_CODES='honeyfarm_'+USER_ID+'_codes';
 const KEY_STATS='honeyfarm_'+USER_ID+'_stats';
 const KEY_LAST_CLAIM='honeyfarm_'+USER_ID+'_lastPetClaim';
-
-function loadHoney(){
-  let v=localStorage.getItem(KEY);
-  if(v && !isNaN(v) && parseInt(v)>=0) return parseInt(v);
-  // For old users, migrate from old key if this is first time
-  let oldKey = localStorage.getItem('honeyfarm_v2_honey') || localStorage.getItem('honey');
-  if(oldKey && !isNaN(oldKey) && parseInt(oldKey)>0 && !localStorage.getItem(KEY+'_migrated')){
-    localStorage.setItem(KEY+'_migrated','1');
-    return parseInt(oldKey);
-  }
-  return 0;
-}
-
+function loadHoney(){let v=localStorage.getItem(KEY); if(v&&!isNaN(v)&&parseInt(v)>=0) return parseInt(v); let old=localStorage.getItem('honeyfarm_v2_honey')||localStorage.getItem('honey'); if(old&&!isNaN(old)&&parseInt(old)>0&&!localStorage.getItem(KEY+'_migrated')){localStorage.setItem(KEY+'_migrated','1'); return parseInt(old);} return 0;}
 let honey=loadHoney();
 let withdrawals=JSON.parse(localStorage.getItem(KEY_WITHDRAW)||'[]');
 let invites=JSON.parse(localStorage.getItem(KEY_INVITES)||'[]');
@@ -100,91 +73,62 @@ let stats=JSON.parse(localStorage.getItem(KEY_STATS)||'{"farmClicks":0,"adsWatch
 const PETS=[{id:1,name:"🐝 Worker Bee",price:100000,income:5000},{id:2,name:"🐝 Soldier Bee",price:500000,income:30000},{id:3,name:"👑 Queen Bee",price:2000000,income:150000}];
 const CODES={"BEELOVE":100000,"HONEY100K":100000,"GENSAN":50000,"BOSS":200000};
 
-function save(){
-  localStorage.setItem(KEY,honey.toString());
-  localStorage.setItem(KEY_WITHDRAW,JSON.stringify(withdrawals));
-  localStorage.setItem(KEY_INVITES,JSON.stringify(invites));
-  localStorage.setItem(KEY_PETS,JSON.stringify(myPets));
-  localStorage.setItem(KEY_QUESTS,JSON.stringify(quests));
-  localStorage.setItem(KEY_CODES,JSON.stringify(usedCodes));
-  localStorage.setItem(KEY_STATS,JSON.stringify(stats));
-  updateUI();
-}
-
+function save(){localStorage.setItem(KEY,honey.toString());localStorage.setItem(KEY_WITHDRAW,JSON.stringify(withdrawals));localStorage.setItem(KEY_INVITES,JSON.stringify(invites));localStorage.setItem(KEY_PETS,JSON.stringify(myPets));localStorage.setItem(KEY_QUESTS,JSON.stringify(quests));localStorage.setItem(KEY_CODES,JSON.stringify(usedCodes));localStorage.setItem(KEY_STATS,JSON.stringify(stats));updateUI();}
 function addHoney(n){honey+=n;save();saveToLeaderboard();}
 function farmHoney(){addHoney(10);stats.farmClicks++;quests.farm=Math.min(quests.farm+1,20);save();checkQuestReset();}
+function updateUI(){document.getElementById('userIdDisplay').innerText='ID: '+USER_ID+' | ADS: int-57202 LIVE!';document.getElementById('honeyCount').innerText=honey.toLocaleString()+" 🍯";document.getElementById('infoText').innerText=Math.floor(honey/1000000)+" GCash | Min 50 | Top 1: 1k";let totalIncome=myPets.reduce((s,p)=>{let def=PETS.find(x=>x.id===p.id);return s+(def?def.income:0)*p.count;},0);document.getElementById('petIncome').innerText="🐝 Pets: "+totalIncome.toLocaleString()+"/hour | Clicks: "+stats.farmClicks;let el=document.getElementById('myHoneyConvert');if(el) el.innerText=honey.toLocaleString();let h=document.getElementById('withdrawHistory');if(h&&withdrawals.length>0) h.innerHTML=withdrawals.slice(-3).map(w=>w.honey.toLocaleString()+" → "+w.gcash+" GCash").join("<br>");let ic=document.getElementById('inviteCount');if(ic) ic.innerText=invites.length;}
 
-function updateUI(){
-  document.getElementById('userIdDisplay').innerText='ID: '+USER_ID+' | Per Account Honey!';
-  document.getElementById('honeyCount').innerText=honey.toLocaleString()+" 🍯";
-  document.getElementById('infoText').innerText=Math.floor(honey/1000000)+" GCash | Min 50 GCash | Top 1: 1k";
-  let totalIncome=myPets.reduce((s,p)=>{let def=PETS.find(x=>x.id===p.id); return s+(def?def.income:0)*p.count;},0);
-  document.getElementById('petIncome').innerText="🐝 Pets: "+totalIncome.toLocaleString()+"/hour | Clicks: "+stats.farmClicks;
-  let el=document.getElementById('myHoneyConvert'); if(el) el.innerText=honey.toLocaleString();
-  let h=document.getElementById('withdrawHistory'); if(h&&withdrawals.length>0) h.innerHTML=withdrawals.slice(-3).map(w=>w.honey.toLocaleString()+" → "+w.gcash+" GCash").join("<br>");
-  let ic=document.getElementById('inviteCount'); if(ic) ic.innerText=invites.length;
+let AdController=null;
+try{
+  AdController=window.Adsgram.init({blockId:"int-57202"});
+  console.log("AdsGram LIVE int-57202");
+}catch(e){console.log("Ads fail",e);}
+
+async function showAd(){
+  try{
+    if(AdController){
+      await AdController.show();
+      console.log("Ad shown int-57202");
+    }
+  }catch(e){console.log("Ad closed/failed",e);}
+  stats.adsWatched++;quests.ads=Math.min(quests.ads+1,5);save();
+}
+async function watchAdForHoney(){
+  let b=document.getElementById('adBtn');b.disabled=true;b.innerText=' 📺 Loading Ad int-57202...';
+  await showAd();addHoney(20000);b.disabled=false;b.innerText='📺 Watch Ad +20k Honey';alert("🎉 +20k! Total ads: "+stats.adsWatched);
 }
 
-let AdController=null; try{AdController=window.Adsgram.init({blockId:"int-57059"});}catch(e){}
-async function showAd(){try{if(AdController) await AdController.show();}catch(e){} stats.adsWatched++; quests.ads=Math.min(quests.ads+1,5); save();}
-async function watchAdForHoney(){let b=document.getElementById('adBtn'); b.disabled=true; b.innerText=' Loading...'; await showAd(); addHoney(20000); b.disabled=false; b.innerText='📺 Watch Ad +20k Honey';}
-function checkQuestReset(){let today=new Date().toDateString(); if(quests.date!==today){quests={ads:0,farm:0,games:0,invite:invites.length,date:today}; save();}}
-function openQuests(){checkQuestReset(); document.getElementById('questsModal').style.display='flex'; let q=quests; document.getElementById('questsList').innerHTML=`<div class="petCard ${q.ads>=5?'questDone':''}">📺 Watch 5 Ads: ${q.ads}/5 ${q.ads>=5?'✅':''}</div><div class="petCard ${q.farm>=20?'questDone':''}">👆 Farm 20x: ${q.farm}/20 ${q.farm>=20?'✅':''}</div><div class="petCard ${q.games>=3?'questDone':''}">🎮 Play 3 Games: ${q.games}/3 ${q.games>=3?'✅':''}</div><div class="petCard ${invites.length>=1?'questDone':''}">👥 Invite 1: ${invites.length} ${invites.length>=1?'✅':''}</div>`;}
+function checkQuestReset(){let today=new Date().toDateString();if(quests.date!==today){quests={ads:0,farm:0,games:0,invite:invites.length,date:today};save();}}
+function openQuests(){checkQuestReset();document.getElementById('questsModal').style.display='flex';let q=quests;document.getElementById('questsList').innerHTML=`<div class="petCard ${q.ads>=5?'questDone':''}">📺 Watch 5 Ads: ${q.ads}/5 ${q.ads>=5?'✅':''}</div><div class="petCard ${q.farm>=20?'questDone':''}">👆 Farm 20x: ${q.farm}/20 ${q.farm>=20?'✅':''}</div><div class="petCard ${q.games>=3?'questDone':''}">🎮 Play 3 Games: ${q.games}/3 ${q.games>=3?'✅':''}</div><div class="petCard ${invites.length>=1?'questDone':''}">👥 Invite 1: ${invites.length} ${invites.length>=1?'✅':''}</div>`;}
 function closeQuests(){document.getElementById('questsModal').style.display='none';}
-function claimQuestBonus(){if(quests.ads>=5&&quests.farm>=20&&quests.games>=3&&invites.length>=1){addHoney(150000); alert("🎉 +150k Quest Bonus!"); quests.ads=0;quests.farm=0;quests.games=0; save(); closeQuests();}else alert("Kulang pa quests! Complete 4!");}
-function openPets(){document.getElementById('petsModal').style.display='flex'; let list=document.getElementById('petsList'); let html=""; PETS.forEach(p=>{let owned=myPets.find(x=>x.id===p.id); let count=owned?owned.count:0; html+=`<div class="petCard"><div><b>${p.name}</b><br>${p.price.toLocaleString()} 🍯<br><small>${p.income.toLocaleString()}/hr - Owned: ${count}</small></div><button class="btn btn-green" style="width:80px" onclick="buyPet(${p.id})">Buy</button></div>`;}); list.innerHTML=html;}
+function claimQuestBonus(){if(quests.ads>=5&&quests.farm>=20&&quests.games>=3&&invites.length>=1){addHoney(150000);alert("🎉 +150k Quest Bonus!");quests.ads=0;quests.farm=0;quests.games=0;save();closeQuests();}else alert("Kulang pa quests! Complete 4!");}
+function openPets(){document.getElementById('petsModal').style.display='flex';let list=document.getElementById('petsList');let html="";PETS.forEach(p=>{let owned=myPets.find(x=>x.id===p.id);let count=owned?owned.count:0;html+=`<div class="petCard"><div><b>${p.name}</b><br>${p.price.toLocaleString()} 🍯<br><small>${p.income.toLocaleString()}/hr - Owned: ${count}</small></div><button class="btn btn-green" style="width:80px" onclick="buyPet(${p.id})">Buy</button></div>`;});list.innerHTML=html;}
 function closePets(){document.getElementById('petsModal').style.display='none';}
-function buyPet(id){let pet=PETS.find(p=>p.id===id); if(honey<pet.price){alert("Kulang! Need "+pet.price.toLocaleString()); return;} honey-=pet.price; let owned=myPets.find(x=>x.id===id); if(owned) owned.count++; else myPets.push({id:id,count:1}); save(); alert("Bought "+pet.name+"!"); openPets();}
-function claimPetIncome(){let total=0; myPets.forEach(o=>{let def=PETS.find(p=>p.id===o.id); if(def) total+=def.income*o.count;}); if(total===0){alert("Wala kay pet! Buy una!"); return;} addHoney(total); alert("Claimed "+total.toLocaleString()+"!");}
-function redeemCode(){let code=document.getElementById('codeInput').value.toUpperCase().trim(); if(!code){alert("Enter code!");return;} if(usedCodes.includes(code)){alert("Used na!");return;} if(CODES[code]){addHoney(CODES[code]); usedCodes.push(code); save(); alert("🎉 +"+CODES[code].toLocaleString()+"!"); document.getElementById('codeInput').value="";}else alert("Invalid! Try: BEELOVE, HONEY100K, GENSAN, BOSS");}
+function buyPet(id){let pet=PETS.find(p=>p.id===id);if(honey<pet.price){alert("Kulang! Need "+pet.price.toLocaleString());return;}honey-=pet.price;let owned=myPets.find(x=>x.id===id);if(owned) owned.count++;else myPets.push({id:id,count:1});save();alert("Bought "+pet.name+"!");openPets();}
+function claimPetIncome(){let total=0;myPets.forEach(o=>{let def=PETS.find(p=>p.id===o.id);if(def) total+=def.income*o.count;});if(total===0){alert("Wala kay pet! Buy una!");return;}addHoney(total);alert("Claimed "+total.toLocaleString()+"!");}
+function redeemCode(){let code=document.getElementById('codeInput').value.toUpperCase().trim();if(!code){alert("Enter code!");return;}if(usedCodes.includes(code)){alert("Used na!");return;}if(CODES[code]){addHoney(CODES[code]);usedCodes.push(code);save();alert("🎉 +"+CODES[code].toLocaleString()+"!");document.getElementById('codeInput').value="";}else alert("Invalid! Try: BEELOVE, HONEY100K, GENSAN, BOSS");}
 function openGames(){document.getElementById('gamesModal').style.display='flex';}
-function closeGames(){document.getElementById('gamesModal').style.display='none'; document.getElementById('gameArea').style.display='none';}
-async function playGame(type){let area=document.getElementById('gameArea'); area.style.display='block'; area.innerHTML='<p>📺 Loading Ad...</p>'; await showAd(); quests.games=Math.min(quests.games+1,3); save(); if(type==='catcher'){area.innerHTML=`<h3>🐝 CATCHER!</h3><p>Click honey!</p><div style="font-size:40px;cursor:pointer" onclick="catchHoney()">🍯</div><div id="catchScore">Honey: 0</div>`; let s=0; window.catchHoney=()=>{s+=5000; honey+=5000; save(); document.getElementById('catchScore').innerText='Honey: +'+s.toLocaleString(); updateUI();}; setTimeout(()=>{area.innerHTML+=`<p><b>Done! +${s.toLocaleString()}</b></p>`;},10000);} if(type==='box'){area.innerHTML=`<h3>🎁 LUCKY BOX</h3><div style="display:flex;gap:8px;justify-content:center"><button class="btn" style="font-size:30px" onclick="openBox(1)">📦</button><button class="btn" style="font-size:30px" onclick="openBox(2)">📦</button><button class="btn" style="font-size:30px" onclick="openBox(3)">📦</button></div>`; window.openBox=(n)=>{let win=[10000,25000,50000][Math.floor(Math.random()*3)]; addHoney(win); area.innerHTML=`<h2>🎉 +${win.toLocaleString()}!</h2><button class="btn btn-green" onclick="playGame('box')">Again + Ad</button>`;};} if(type==='quiz'){let a=Math.floor(Math.random()*20)+1; let b2=Math.floor(Math.random()*10)+1; let ans=a+b2; area.innerHTML=`<h3>🧮 ${a}+${b2}=?</h3><input id="quizAns" type="number"><button class="btn btn-blue" onclick="checkQuiz(${ans})">Submit</button>`; window.checkQuiz=(c)=>{let u=parseInt(document.getElementById('quizAns').value); if(u===c){addHoney(10000); area.innerHTML=`<h2>✅ +10k!</h2><button class="btn" onclick="playGame('quiz')">Next</button>`;}else area.innerHTML=`<h2>❌ ${c} answer</h2>`;};} if(type==='daily'){addHoney(25000); area.innerHTML=`<h2>📅 +25k Daily!</h2>`;}}
+function closeGames(){document.getElementById('gamesModal').style.display='none';document.getElementById('gameArea').style.display='none';}
+async function playGame(type){let area=document.getElementById('gameArea');area.style.display='block';area.innerHTML='<p>📺 Loading Ad int-57202...</p>';await showAd();quests.games=Math.min(quests.games+1,3);save();if(type==='catcher'){area.innerHTML=`<h3>🐝 CATCHER!</h3><p>Click honey!</p><div style="font-size:40px;cursor:pointer" onclick="catchHoney()">🍯</div><div id="catchScore">Honey: 0</div>`;let s=0;window.catchHoney=()=>{s+=5000;honey+=5000;save();document.getElementById('catchScore').innerText='Honey: +'+s.toLocaleString();updateUI();};setTimeout(()=>{area.innerHTML+=`<p><b>Done! +${s.toLocaleString()}</b></p>`;},10000);} if(type==='box'){area.innerHTML=`<h3>🎁 LUCKY BOX</h3><div style="display:flex;gap:8px;justify-content:center"><button class="btn" style="font-size:30px" onclick="openBox(1)">📦</button><button class="btn" style="font-size:30px" onclick="openBox(2)">📦</button><button class="btn" style="font-size:30px" onclick="openBox(3)">📦</button></div>`;window.openBox=(n)=>{let win=[10000,25000,50000][Math.floor(Math.random()*3)];addHoney(win);area.innerHTML=`<h2>🎉 +${win.toLocaleString()}!</h2><button class="btn btn-green" onclick="playGame('box')">Again + Ad</button>`;};} if(type==='quiz'){let a=Math.floor(Math.random()*20)+1;let b2=Math.floor(Math.random()*10)+1;let ans=a+b2;area.innerHTML=`<h3>🧮 ${a}+${b2}=?</h3><input id="quizAns" type="number"><button class="btn btn-blue" onclick="checkQuiz(${ans})">Submit</button>`;window.checkQuiz=(c)=>{let u=parseInt(document.getElementById('quizAns').value);if(u===c){addHoney(10000);area.innerHTML=`<h2>✅ +10k!</h2><button class="btn" onclick="playGame('quiz')">Next</button>`;}else area.innerHTML=`<h2>❌ ${c} answer</h2>`;};} if(type==='daily'){addHoney(25000);area.innerHTML=`<h2>📅 +25k Daily!</h2>`;}}
 function openWheel(){document.getElementById('wheelModal').style.display='flex';}
 function closeWheel(){document.getElementById('wheelModal').style.display='none';}
 let spinning=false;
-function spinWheel(){if(spinning) return; if(honey<2000){alert("Kulang 2k!");return;} spinning=true; honey-=2000; save(); let btn=document.getElementById('spinBtn'); btn.disabled=true; btn.innerText=' Spinning...'; let rewards=[1000,5000,10000,20000,50000,100000]; let win=rewards[Math.floor(Math.random()*rewards.length)]; let rot=1800+Math.random()*360; document.getElementById('wheel').style.transform='rotate('+rot+'deg)'; setTimeout(()=>{addHoney(win);document.getElementById('wheelResult').innerText='WIN +'+win.toLocaleString()+'!';btn.disabled=false;btn.innerText='SPIN AGAIN (2k)';spinning=false;},3000);}
+function spinWheel(){if(spinning) return;if(honey<2000){alert("Kulang 2k!");return;}spinning=true;honey-=2000;save();let btn=document.getElementById('spinBtn');btn.disabled=true;btn.innerText=' Spinning...';let rewards=[1000,5000,10000,20000,50000,100000];let win=rewards[Math.floor(Math.random()*rewards.length)];let rot=1800+Math.random()*360;document.getElementById('wheel').style.transform='rotate('+rot+'deg)';setTimeout(()=>{addHoney(win);document.getElementById('wheelResult').innerText='WIN +'+win.toLocaleString()+'!';btn.disabled=false;btn.innerText='SPIN AGAIN (2k)';spinning=false;},3000);}
 function openConvert(){document.getElementById('convertModal').style.display='flex';document.getElementById('convertInput').oninput=calcConvert;updateUI();}
 function closeConvert(){document.getElementById('convertModal').style.display='none';}
 function calcConvert(){let h=parseInt(document.getElementById('convertInput').value||0);document.getElementById('gcashPreview').innerText=Math.floor(h/1000000)+" GCash";}
-function doConvert(){
-  let h=parseInt(document.getElementById('convertInput').value||0); 
-  let num=document.getElementById('gcashNum').value; 
-  if(h<50000000){alert("Min 50 GCash = 50M honey boss!");return;}
-  if(h>honey){alert("Kulang! "+honey.toLocaleString()+" lang");return;} 
-  if(!num||num.length<11){alert("GCash number boss!");return;} 
-  let gcash=Math.floor(h/1000000); 
-  if(gcash<50){alert("Min 50 GCash boss!");return;}
-  if(!confirm(h.toLocaleString()+" = "+gcash+" GCash to "+num+"?")) return; 
-  honey-=h; withdrawals.push({honey:h,gcash:gcash,number:num,date:new Date().toLocaleString()}); save(); alert("Success! "+gcash+" GCash pending!"); closeConvert();
-}
-function openInvite(){document.getElementById('inviteModal').style.display='flex'; let uid=USER_ID; let link="https://t.me/Honeyfarmget_bot?start="+uid; document.getElementById('inviteLink').innerText=link; document.getElementById('inviteCount').innerText=invites.length;}
+function doConvert(){let h=parseInt(document.getElementById('convertInput').value||0);let num=document.getElementById('gcashNum').value;if(h<50000000){alert("Min 50 GCash = 50M honey boss!");return;}if(h>honey){alert("Kulang! "+honey.toLocaleString()+" lang");return;}if(!num||num.length<11){alert("GCash number boss!");return;}let gcash=Math.floor(h/1000000);if(gcash<50){alert("Min 50 GCash boss!");return;}if(!confirm(h.toLocaleString()+" = "+gcash+" GCash to "+num+"?")) return;honey-=h;withdrawals.push({honey:h,gcash:gcash,number:num,date:new Date().toLocaleString()});save();alert("Success! "+gcash+" GCash pending!");closeConvert();}
+function openInvite(){document.getElementById('inviteModal').style.display='flex';let uid=USER_ID;let link="https://t.me/Honeyfarmget_bot?start="+uid;document.getElementById('inviteLink').innerText=link;document.getElementById('inviteCount').innerText=invites.length;}
 function closeInvite(){document.getElementById('inviteModal').style.display='none';}
 function copyInvite(){let t=document.getElementById('inviteLink').innerText;navigator.clipboard.writeText(t).then(()=>alert("Copied!"));}
-function shareInvite(){let t=document.getElementById('inviteLink').innerText;let m="🐝 Play HoneyFarm! Min 50 GCash! "+t; if(navigator.share){navigator.share({text:m});}else{navigator.clipboard.writeText(m);alert("Copied!");}}
-function checkInviteReward(){try{let u=new URLSearchParams(window.location.search);let s=u.get('tgWebAppStartParam')||u.get('start'); if(s&&s!==USER_ID&&!invites.includes(s)){invites.push(s); addHoney(20000); alert("Welcome! +20k!"); save();}}catch(e){}}
-function saveToLeaderboard(){let uid=USER_ID; let name="Player"; try{if(window.Telegram&&Telegram.WebApp.initDataUnsafe.user) name=Telegram.WebApp.initDataUnsafe.user.first_name||"Player";}catch(e){} let ex=leaderboard.find(p=>p.id===uid); if(ex){ex.honey=honey;ex.name=name;}else{leaderboard.push({id:uid,name:name,honey:honey});} leaderboard.sort((a,b)=>b.honey-a.honey); leaderboard=leaderboard.slice(0,20); localStorage.setItem('honeyfarm_leaderboard',JSON.stringify(leaderboard));}
-function openLeaderboard(){saveToLeaderboard(); document.getElementById('leaderboardModal').style.display='flex'; let list=document.getElementById('leaderboardList'); if(leaderboard.length===0){list.innerHTML="<p>Wala pay player!</p>";return;} let html=""; leaderboard.forEach((p,i)=>{let medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`; let isMe=p.id===USER_ID?" (IKAW)":""; html+=`<div style="padding:8px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;${isMe?'background:#FFF9C4;font-weight:bold':''}"><span>${medal} ${p.name}${isMe}</span><span><b>${p.honey.toLocaleString()}</b></span></div>`;}); list.innerHTML=html;}
+function shareInvite(){let t=document.getElementById('inviteLink').innerText;let m="🐝 Play HoneyFarm! Min 50 GCash! "+t;if(navigator.share){navigator.share({text:m});}else{navigator.clipboard.writeText(m);alert("Copied!");}}
+function checkInviteReward(){try{let u=new URLSearchParams(window.location.search);let s=u.get('tgWebAppStartParam')||u.get('start');if(s&&s!==USER_ID&&!invites.includes(s)){invites.push(s);addHoney(20000);alert("Welcome! +20k!");save();}}catch(e){}}
+function saveToLeaderboard(){let uid=USER_ID;let name="Player";try{if(window.Telegram&&Telegram.WebApp.initDataUnsafe.user) name=Telegram.WebApp.initDataUnsafe.user.first_name||"Player";}catch(e){}let ex=leaderboard.find(p=>p.id===uid);if(ex){ex.honey=honey;ex.name=name;}else{leaderboard.push({id:uid,name:name,honey:honey});}leaderboard.sort((a,b)=>b.honey-a.honey);leaderboard=leaderboard.slice(0,20);localStorage.setItem('honeyfarm_leaderboard',JSON.stringify(leaderboard));}
+function openLeaderboard(){saveToLeaderboard();document.getElementById('leaderboardModal').style.display='flex';let list=document.getElementById('leaderboardList');if(leaderboard.length===0){list.innerHTML="<p>Wala pay player!</p>";return;}let html="";leaderboard.forEach((p,i)=>{let medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`;let isMe=p.id===USER_ID?" (IKAW)":"";html+=`<div style="padding:8px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;${isMe?'background:#FFF9C4;font-weight:bold':''}"><span>${medal} ${p.name}${isMe}</span><span><b>${p.honey.toLocaleString()}</b></span></div>`;});list.innerHTML=html;}
 function closeLeaderboard(){document.getElementById('leaderboardModal').style.display='none';}
-
-updateUI(); checkQuestReset(); checkInviteReward(); saveToLeaderboard();
+updateUI();checkQuestReset();checkInviteReward();saveToLeaderboard();
 if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
-
-setInterval(()=>{
-  let last=parseInt(localStorage.getItem(KEY_LAST_CLAIM)||'0');
-  let now=Date.now();
-  if(now-last>3600000){
-    let total=0;
-    myPets.forEach(o=>{
-      let def=PETS.find(p=>p.id===o.id);
-      if(def) total+=def.income*o.count;
-    });
-    if(total>0){
-      addHoney(total);
-      localStorage.setItem(KEY_LAST_CLAIM,now.toString());
-    }
-  }
-},60000);
+setInterval(()=>{let last=parseInt(localStorage.getItem(KEY_LAST_CLAIM)||'0');let now=Date.now();if(now-last>3600000){let total=0;myPets.forEach(o=>{let def=PETS.find(p=>p.id===o.id);if(def) total+=def.income*o.count;});if(total>0){addHoney(total);localStorage.setItem(KEY_LAST_CLAIM,now.toString());}}},60000);
 </script>
 </body>
 </html>
