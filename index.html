@@ -3,63 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HoneyFarm</title>
+<title>HoneyFarm Pro</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-body{font-family:sans-serif;background:#FFF8DC;text-align:center;padding:20px}
-h1{color:#FF8C00}
-#honey{font-size:48px;font-weight:bold;color:#DAA520}
-button{padding:15px 30px;font-size:18px;background:#FFB300;border:none;border-radius:15px;margin:10px}
-#bee{font-size:80px}
+body{background:linear-gradient(#FFF9C4,#FFCC80);font-family:sans-serif;text-align:center;margin:0;padding:15px}
+.card{background:white;border-radius:20px;padding:15px;margin:10px;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+#honey{font-size:42px;font-weight:bold;color:#F57F17}
+button{background:#FFB300;border:none;padding:12px 20px;border-radius:12px;font-weight:bold;margin:5px;width:90%}
+button:active{transform:scale(.95)}
+#bee{font-size:70px;animation:fly 2s infinite}
+@keyframes fly{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 </style>
 </head>
 <body>
-<h1>🍯 HoneyFarm 🐝</h1>
+<div class="card">
+<h2>🍯 HoneyFarm Pro 🐝</h2>
 <div id="bee">🐝</div>
 <div id="honey">0</div>
-<p>Honey Points</p>
-<p>Bees: <span id="bees">1</span></p>
+<small>Honey Points (For Fun Only)</small>
+<p>🐝 Bees: <span id="bees">1</span> | ⚡ <span id="per">1</span>/sec</p>
+</div>
 
-<button onclick="collect()">🌼 Collect Honey</button><br>
-<button onclick="buyBee()">🏪 Buy Bee (50 Honey)</button>
-
-<p style="font-size:12px;margin-top:30px">Points only - Just for fun! No real money.</p>
-
+<div class="card">
+<button onclick="collect()">🌼 COLLECT +1</button>
+<button onclick="buyBee(1)">Buy Bee Lv1 (50)</button>
+<button onclick="buyBee(2)">Buy Bee Lv2 (150) +3/sec</button>
+<button onclick="daily()">🎁 Daily Bonus +20</button>
+<button onclick="invite()">👥 Invite Friends</button>
+</div>
+<p style="font-size:10px">Version 2 - Points only, no real money withdrawal.</p>
 <script>
-let honey = parseInt(localStorage.getItem('honey')||'75');
-let bees = parseInt(localStorage.getItem('bees')||'1');
-
+let honey=parseInt(localStorage.getItem('honey')||'75');
+let bees=parseInt(localStorage.getItem('bees')||'1');
+let per=parseInt(localStorage.getItem('per')||'1');
 function update(){
- document.getElementById('honey').innerText = honey;
- document.getElementById('bees').innerText = bees;
- localStorage.setItem('honey', honey);
- localStorage.setItem('bees', bees);
+document.getElementById('honey').innerText=honey;
+document.getElementById('bees').innerText=bees;
+document.getElementById('per').innerText=per;
+localStorage.setItem('honey',honey);localStorage.setItem('bees',bees);localStorage.setItem('per',per);
 }
-
-function collect(){
- honey += 1;
- update();
-}
-
-function buyBee(){
- if(honey >= 50){
-   honey -= 50;
-   bees += 1;
-   update();
-   alert('New bee bought! 🐝');
- } else {
-   alert('Not enough honey! Need 50');
- }
-}
-
-// Auto farm
-setInterval(()=>{
- honey += bees;
- update();
-}, 3000);
-
-update();
-if(window.Telegram?.WebApp) Telegram.WebApp.ready();
+function collect(){honey+=1;update()}
+function buyBee(lv){
+if(lv==1&&honey>=50){honey-=50;bees+=1;per+=1;update()}
+else if(lv==2&&honey>=150){honey-=150;bees+=1;per+=3;update()}
+else alert('Kulang pa honey boss!')}
+function daily(){
+let last=localStorage.getItem('daily')||0;
+if(Date.now()-last>86400000){honey+=20;localStorage.setItem('daily',Date.now());update();alert('Daily +20! 🎁')}else alert('Balik ugma boss!')}
+function invite(){let link='https://t.me/Honeyfarmget_bot';navigator.clipboard.writeText(link);alert('Link copied! Share mo sa friends: '+link)}
+setInterval(()=>{honey+=per;update()},1000);
+update();Telegram.WebApp.ready();Telegram.WebApp.expand();
 </script>
 </body>
 </html>
