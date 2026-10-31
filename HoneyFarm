@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HoneyFarm</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+body{font-family:sans-serif;background:#FFF8DC;text-align:center;padding:20px}
+h1{color:#FF8C00}
+#honey{font-size:48px;font-weight:bold;color:#DAA520}
+button{padding:15px 30px;font-size:18px;background:#FFB300;border:none;border-radius:15px;margin:10px}
+#bee{font-size:80px}
+</style>
+</head>
+<body>
+<h1>🍯 HoneyFarm 🐝</h1>
+<div id="bee">🐝</div>
+<div id="honey">0</div>
+<p>Honey Points</p>
+<p>Bees: <span id="bees">1</span></p>
+
+<button onclick="collect()">🌼 Collect Honey</button><br>
+<button onclick="buyBee()">🏪 Buy Bee (50 Honey)</button>
+
+<p style="font-size:12px;margin-top:30px">Points only - Just for fun! No real money.</p>
+
+<script>
+let honey = parseInt(localStorage.getItem('honey')||'75');
+let bees = parseInt(localStorage.getItem('bees')||'1');
+
+function update(){
+ document.getElementById('honey').innerText = honey;
+ document.getElementById('bees').innerText = bees;
+ localStorage.setItem('honey', honey);
+ localStorage.setItem('bees', bees);
+}
+
+function collect(){
+ honey += 1;
+ update();
+}
+
+function buyBee(){
+ if(honey >= 50){
+   honey -= 50;
+   bees += 1;
+   update();
+   alert('New bee bought! 🐝');
+ } else {
+   alert('Not enough honey! Need 50');
+ }
+}
+
+// Auto farm
+setInterval(()=>{
+ honey += bees;
+ update();
+}, 3000);
+
+update();
+if(window.Telegram?.WebApp) Telegram.WebApp.ready();
+</script>
+</body>
+</html>
