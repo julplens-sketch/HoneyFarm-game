@@ -3,49 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<title>HoneyFarm Top 3</title>
+<title>HoneyFarm Top Invite</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 body{background:linear-gradient(#FFF9C4,#FFB300);font-family:sans-serif;text-align:center;margin:0;padding:10px}
 .card{background:white;border-radius:18px;padding:12px;margin:8px;box-shadow:0 3px 8px rgba(0,0,0,.2)}
-#honey{font-size:44px;font-weight:bold;color:#E65100}
-button{background:#FFB300;border:none;padding:13px;border-radius:12px;font-weight:bold;margin:4px;width:92%}
-.prize{background:linear-gradient(#FF1744,#D50000);color:white;padding:12px;border-radius:15px;margin:10px;font-weight:bold}
+#honey{font-size:42px;font-weight:bold;color:#E65100}
+button{background:#FFB300;border:none;padding:12px;border-radius:12px;font-weight:bold;margin:4px;width:92%}
+.prize{background:linear-gradient(#FF1744,#D50000);color:white;padding:12px;border-radius:15px;margin:8px;font-weight:bold;font-size:13px}
+.invite-box{background:linear-gradient(#00C853,#00E676);color:white;padding:12px;border-radius:15px;margin:8px;font-weight:bold}
 </style>
 </head>
 <body>
-<div class="prize">🏆 WEEKLY PRIZES 🏆<br>🥇 Top1: 1,000 GCASH<br>🥈 Top2: 500 GCASH<br>🥉 Top3: 250 GCASH<br><small>Sunday 8PM - Claim via Bot</small></div>
+<div class="prize">🏆 TOP HONEY WEEKLY<br>🥇1K 🥈500 🥉250 GCASH<br><small>Sunday 8PM - Highest Honey</small></div>
+<div class="invite-box">👥 TOP INVITE WEEKLY<br>🥇1K 🥈500 🥉250 GCASH<br><small>Sunday 8PM - Most Invites</small><br><small id="myInvites">Your Invites: 0</small></div>
+
 <div class="card">
 <h3>🍯 HoneyFarm Pro</h3>
-<div style="font-size:60px">🐝</div>
+<div style="font-size:50px">🐝</div>
 <div id="honey">0</div>
-<small>Your Honey Points</small>
-<p>Bees: <span id="bees">1</span> | <span id="per">1</span>/sec | You: <span id="myuser">@loading</span></p>
+<small>Honey Points</small>
+<p>Bees: <span id="bees">1</span> | <span id="per">1</span>/sec</p>
+<p>You: <span id="myuser">@loading</span></p>
 </div>
+
 <div class="card">
 <button onclick="collect()">🌼 COLLECT +1</button>
 <button onclick="buyBee()">🏪 Buy Bee (50)</button>
 <button onclick="daily()">🎁 Daily +20</button>
+<button onclick="inviteFriend()">👥 Invite Friends (Top Invite)</button>
 <button onclick="showBoard()">🏆 How To Win</button>
-<button onclick="claim()">📩 Claim Prize (Send Username)</button>
-</div>
-<div class="card" id="board" style="display:none"></div>
-<p style="font-size:8px">Entertainment only. Top 3 weekly contest. Owner manually verifies winner via Telegram bot. Not auto income.</p>
-<script>
-let honey=parseInt(localStorage.getItem('honey')||'75');
-let bees=parseInt(localStorage.getItem('bees')||'1');
-let per=parseInt(localStorage.getItem('per')||'1');
-let tgUser=Telegram.WebApp.initDataUnsafe.user;
-let myUsername=tgUser?.username ? '@'+tgUser.username : (tgUser?.first_name || 'Guest Player');
-document.getElementById('myuser').innerText=myUsername;
-function update(){document.getElementById('honey').innerText=honey;document.getElementById('bees').innerText=bees;document.getElementById('per').innerText=per;localStorage.setItem('honey',honey);localStorage.setItem('bees',bees);localStorage.setItem('per',per);}
-function collect(){honey++;update();}
-function buyBee(){if(honey>=50){honey-=50;bees++;per++;update();}else alert('Kulang pa boss!');}
-function daily(){let l=localStorage.getItem('daily')||0;if(Date.now()-l>86400000){honey+=20;localStorage.setItem('daily',Date.now());update();alert('Daily +20!');}else alert('Balik ugma!');}
-function showBoard(){let b=document.getElementById('board');b.style.display='block';b.innerHTML='<h4>🏆 Unsaon pag daog ug 1K?</h4><p>🥇 Top1: 1,000 GCASH</p><p>🥈 Top2: 500 GCASH</p><p>🥉 Top3: 250 GCASH</p><hr><p>1. Collect daghan honey</p><p>2. Pindota CLAIM PRIZE</p><p>3. Mo-message ka sa bot dala imong @username ug score</p><p>4. Si boss mag check kinsa Top 1,2,3 kada Domingo 8PM</p><p>Your Score: <b>'+honey+'</b> - '+myUsername+'</p>';}
-function claim(){let msg='Boss claim ko prize!%0A%0AUsername: '+myUsername+'%0AHoney: '+honey+'%0ATop 3 Contest%0A%0AScreenshot sa akong score:';Telegram.WebApp.openTelegramLink('https://t.me/Honeyfarmget_bot?text='+encodeURIComponent('Boss claim ko prize! Username: '+myUsername+' Honey: '+honey));}
-setInterval(()=>{honey+=per;update();},1000);
-update();Telegram.WebApp.ready();Telegram.WebApp.expand();
-</script>
-</body>
-</html>
+<button onclick="claimHoney()">
