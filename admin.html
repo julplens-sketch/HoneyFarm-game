@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ADMIN</title><style>body{background:#111;color:#fff;font-family:Arial;padding:10px} .card{background:#222;padding:12px;border-radius:10px;margin:10px 0}</style></head><body>
+<h2 style="color:gold;text-align:center">👑 HoneyFarm ADMIN</h2>
+<div class="card"><h3 id="stats">Loading...</h3><button onclick="location.reload()" style="width:100%;padding:10px;background:gold;border:none;border-radius:8px;font-weight:bold">🔄 Refresh</button></div>
+<div class="card"><h3>💰 Converts</h3><div id="list" style="font-size:12px"></div></div>
+<div class="card"><h3>🏆 Players</h3><div id="players" style="font-size:12px"></div></div>
+<script>
+let lb=JSON.parse(localStorage.getItem('honeyfarm_leaderboard')||'[]');
+let all=[];
+for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k&&k.includes('_withdraw')){try{let d=JSON.parse(localStorage.getItem(k)||'[]');d.forEach(w=>{all.push(w);});}catch(e){}}}
+document.getElementById('stats').innerHTML=all.length+' Converts | '+lb.length+' Players<br>Total: '+all.reduce((s,w)=>s+w.gcash,0)+' GCash Pending';
+let h='';if(all.length==0)h='Wala pa converts sa imong phone. Normal ra boss!';else all.forEach(w=>{h+=w.gcash+' GCash - '+w.number+' - '+w.date+'<br>';});document.getElementById('list').innerHTML=h;
+let p='';lb.forEach((x,i)=>{p+=(i+1)+'. '+x.name+' - '+x.honey.toLocaleString()+'<br>';});document.getElementById('players').innerHTML=p||'Wala pay players';
+</script></body></html>
