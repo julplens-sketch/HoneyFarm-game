@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HoneyFarm 🍯 FINAL 50 MIN</title>
+<title>HoneyFarm 🍯 PER ACCOUNT</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
@@ -26,8 +26,9 @@ input{width:100%;padding:12px;border:2px solid #FFC107;border-radius:8px;font-si
 <body>
 <div class="card">
 <h2>🍯 HoneyFarm 🐝</h2>
+<h3 id="userIdDisplay" style="font-size:11px;color:#888">Loading...</h3>
 <h1 id="honeyCount">0 🍯</h1>
-<p id="infoText" style="font-size:12px">0 GCash | 10M = 10 GCash | Min 50 GCash | Top 1: 1k</p>
+<p id="infoText" style="font-size:12px">0 GCash | Min 50 GCash | Top 1: 1k</p>
 <p id="petIncome" style="font-size:11px;color:green">🐝 Pets: 0/hour</p>
 <button id="adBtn" class="btn btn-yellow" onclick="watchAdForHoney()">📺 Watch Ad +20k</button>
 <button class="btn btn-green" onclick="farmHoney()">👆 Farm +10 Honey</button>
@@ -50,22 +51,80 @@ input{width:100%;padding:12px;border:2px solid #FFC107;border-radius:8px;font-si
 <div id="leaderboardModal" class="modal"><div class="modalBox"><h2>🏆 Leaderboard</h2><div id="leaderboardList" style="text-align:left;max-height:300px;overflow:auto;"></div><button class="btn" style="background:#eee" onclick="closeLeaderboard()">Close</button></div></div>
 
 <script>
-const KEY='honeyfarm_v2_honey';
-function loadHoney(){let v=localStorage.getItem(KEY); if(v&&!isNaN(v)&&parseInt(v)>0) return parseInt(v); let old=localStorage.getItem('honey'); if(old&&!isNaN(old)&&parseInt(old)>0) return parseInt(old); return 978423;}
+// PER TELEGRAM ACCOUNT - LAHI ANG HONEY PER USER!
+function getUserId(){
+  try{
+    if(window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user){
+      return 'tg_'+Telegram.WebApp.initDataUnsafe.user.id;
+    }
+  }catch(e){}
+  let s=localStorage.getItem('my_telegram_id');
+  if(s) return s;
+  let n='user_'+Math.floor(Math.random()*1000000);
+  localStorage.setItem('my_telegram_id',n);
+  return n;
+}
+
+const USER_ID = getUserId();
+
+// PER USER KEYS - DILI NA PAREHA!
+const KEY='honeyfarm_'+USER_ID+'_honey';
+const KEY_WITHDRAW='honeyfarm_'+USER_ID+'_withdraw';
+const KEY_INVITES='honeyfarm_'+USER_ID+'_invites';
+const KEY_PETS='honeyfarm_'+USER_ID+'_pets';
+const KEY_QUESTS='honeyfarm_'+USER_ID+'_quests';
+const KEY_CODES='honeyfarm_'+USER_ID+'_codes';
+const KEY_STATS='honeyfarm_'+USER_ID+'_stats';
+const KEY_LAST_CLAIM='honeyfarm_'+USER_ID+'_lastPetClaim';
+
+function loadHoney(){
+  let v=localStorage.getItem(KEY);
+  if(v && !isNaN(v) && parseInt(v)>=0) return parseInt(v);
+  // For old users, migrate from old key if this is first time
+  let oldKey = localStorage.getItem('honeyfarm_v2_honey') || localStorage.getItem('honey');
+  if(oldKey && !isNaN(oldKey) && parseInt(oldKey)>0 && !localStorage.getItem(KEY+'_migrated')){
+    localStorage.setItem(KEY+'_migrated','1');
+    return parseInt(oldKey);
+  }
+  return 0;
+}
+
 let honey=loadHoney();
-let withdrawals=JSON.parse(localStorage.getItem('honeyfarm_withdraw')||'[]');
-let invites=JSON.parse(localStorage.getItem('honeyfarm_invites')||'[]');
+let withdrawals=JSON.parse(localStorage.getItem(KEY_WITHDRAW)||'[]');
+let invites=JSON.parse(localStorage.getItem(KEY_INVITES)||'[]');
 let leaderboard=JSON.parse(localStorage.getItem('honeyfarm_leaderboard')||'[]');
-let myPets=JSON.parse(localStorage.getItem('honeyfarm_pets')||'[]');
-let quests=JSON.parse(localStorage.getItem('honeyfarm_quests')||'{"ads":0,"farm":0,"games":0,"invite":0,"date":""}');
-let usedCodes=JSON.parse(localStorage.getItem('honeyfarm_codes')||'[]');
-let stats=JSON.parse(localStorage.getItem('honeyfarm_stats')||'{"farmClicks":0,"adsWatched":0,"gamesPlayed":0}');
+let myPets=JSON.parse(localStorage.getItem(KEY_PETS)||'[]');
+let quests=JSON.parse(localStorage.getItem(KEY_QUESTS)||'{"ads":0,"farm":0,"games":0,"invite":0,"date":""}');
+let usedCodes=JSON.parse(localStorage.getItem(KEY_CODES)||'[]');
+let stats=JSON.parse(localStorage.getItem(KEY_STATS)||'{"farmClicks":0,"adsWatched":0,"gamesPlayed":0}');
 const PETS=[{id:1,name:"🐝 Worker Bee",price:100000,income:5000},{id:2,name:"🐝 Soldier Bee",price:500000,income:30000},{id:3,name:"👑 Queen Bee",price:2000000,income:150000}];
 const CODES={"BEELOVE":100000,"HONEY100K":100000,"GENSAN":50000,"BOSS":200000};
-function save(){localStorage.setItem(KEY,honey.toString());localStorage.setItem('honeyfarm_withdraw',JSON.stringify(withdrawals));localStorage.setItem('honeyfarm_invites',JSON.stringify(invites));localStorage.setItem('honeyfarm_pets',JSON.stringify(myPets));localStorage.setItem('honeyfarm_quests',JSON.stringify(quests));localStorage.setItem('honeyfarm_codes',JSON.stringify(usedCodes));localStorage.setItem('honeyfarm_stats',JSON.stringify(stats));updateUI();}
+
+function save(){
+  localStorage.setItem(KEY,honey.toString());
+  localStorage.setItem(KEY_WITHDRAW,JSON.stringify(withdrawals));
+  localStorage.setItem(KEY_INVITES,JSON.stringify(invites));
+  localStorage.setItem(KEY_PETS,JSON.stringify(myPets));
+  localStorage.setItem(KEY_QUESTS,JSON.stringify(quests));
+  localStorage.setItem(KEY_CODES,JSON.stringify(usedCodes));
+  localStorage.setItem(KEY_STATS,JSON.stringify(stats));
+  updateUI();
+}
+
 function addHoney(n){honey+=n;save();saveToLeaderboard();}
 function farmHoney(){addHoney(10);stats.farmClicks++;quests.farm=Math.min(quests.farm+1,20);save();checkQuestReset();}
-function updateUI(){document.getElementById('honeyCount').innerText=honey.toLocaleString()+" 🍯";document.getElementById('infoText').innerText=Math.floor(honey/1000000)+" GCash | Min 50 GCash | Top 1: 1k";let totalIncome=myPets.reduce((s,p)=>{let def=PETS.find(x=>x.id===p.id); return s+(def?def.income:0)*p.count;},0);document.getElementById('petIncome').innerText="🐝 Pets: "+totalIncome.toLocaleString()+"/hour | Clicks: "+stats.farmClicks;let el=document.getElementById('myHoneyConvert'); if(el) el.innerText=honey.toLocaleString();let h=document.getElementById('withdrawHistory'); if(h&&withdrawals.length>0) h.innerHTML=withdrawals.slice(-3).map(w=>w.honey.toLocaleString()+" → "+w.gcash+" GCash").join("<br>");let ic=document.getElementById('inviteCount'); if(ic) ic.innerText=invites.length;}
+
+function updateUI(){
+  document.getElementById('userIdDisplay').innerText='ID: '+USER_ID+' | Per Account Honey!';
+  document.getElementById('honeyCount').innerText=honey.toLocaleString()+" 🍯";
+  document.getElementById('infoText').innerText=Math.floor(honey/1000000)+" GCash | Min 50 GCash | Top 1: 1k";
+  let totalIncome=myPets.reduce((s,p)=>{let def=PETS.find(x=>x.id===p.id); return s+(def?def.income:0)*p.count;},0);
+  document.getElementById('petIncome').innerText="🐝 Pets: "+totalIncome.toLocaleString()+"/hour | Clicks: "+stats.farmClicks;
+  let el=document.getElementById('myHoneyConvert'); if(el) el.innerText=honey.toLocaleString();
+  let h=document.getElementById('withdrawHistory'); if(h&&withdrawals.length>0) h.innerHTML=withdrawals.slice(-3).map(w=>w.honey.toLocaleString()+" → "+w.gcash+" GCash").join("<br>");
+  let ic=document.getElementById('inviteCount'); if(ic) ic.innerText=invites.length;
+}
+
 let AdController=null; try{AdController=window.Adsgram.init({blockId:"int-57059"});}catch(e){}
 async function showAd(){try{if(AdController) await AdController.show();}catch(e){} stats.adsWatched++; quests.ads=Math.min(quests.ads+1,5); save();}
 async function watchAdForHoney(){let b=document.getElementById('adBtn'); b.disabled=true; b.innerText=' Loading...'; await showAd(); addHoney(20000); b.disabled=false; b.innerText='📺 Watch Ad +20k Honey';}
@@ -85,37 +144,34 @@ function openWheel(){document.getElementById('wheelModal').style.display='flex';
 function closeWheel(){document.getElementById('wheelModal').style.display='none';}
 let spinning=false;
 function spinWheel(){if(spinning) return; if(honey<2000){alert("Kulang 2k!");return;} spinning=true; honey-=2000; save(); let btn=document.getElementById('spinBtn'); btn.disabled=true; btn.innerText=' Spinning...'; let rewards=[1000,5000,10000,20000,50000,100000]; let win=rewards[Math.floor(Math.random()*rewards.length)]; let rot=1800+Math.random()*360; document.getElementById('wheel').style.transform='rotate('+rot+'deg)'; setTimeout(()=>{addHoney(win);document.getElementById('wheelResult').innerText='WIN +'+win.toLocaleString()+'!';btn.disabled=false;btn.innerText='SPIN AGAIN (2k)';spinning=false;},3000);}
-
-// MINIMUM 50 GCASH = 50M HONEY
 function openConvert(){document.getElementById('convertModal').style.display='flex';document.getElementById('convertInput').oninput=calcConvert;updateUI();}
 function closeConvert(){document.getElementById('convertModal').style.display='none';}
 function calcConvert(){let h=parseInt(document.getElementById('convertInput').value||0);document.getElementById('gcashPreview').innerText=Math.floor(h/1000000)+" GCash";}
 function doConvert(){
   let h=parseInt(document.getElementById('convertInput').value||0); 
   let num=document.getElementById('gcashNum').value; 
-  if(h<50000000){alert("Min 50 GCash = 50M honey boss! Need 50M!");return;}
-  if(h>honey){alert("Kulang honey! "+honey.toLocaleString()+" lang");return;} 
-  if(!num||num.length<11){alert("GCash number boss! 09xxxxxxxxx");return;} 
+  if(h<50000000){alert("Min 50 GCash = 50M honey boss!");return;}
+  if(h>honey){alert("Kulang! "+honey.toLocaleString()+" lang");return;} 
+  if(!num||num.length<11){alert("GCash number boss!");return;} 
   let gcash=Math.floor(h/1000000); 
   if(gcash<50){alert("Min 50 GCash boss!");return;}
-  if(!confirm(h.toLocaleString()+" honey = "+gcash+" GCash to "+num+"?")) return; 
-  honey-=h; withdrawals.push({honey:h,gcash:gcash,number:num,date:new Date().toLocaleString()}); save(); alert("Success! "+gcash+" GCash pending to "+num+"!"); closeConvert();
+  if(!confirm(h.toLocaleString()+" = "+gcash+" GCash to "+num+"?")) return; 
+  honey-=h; withdrawals.push({honey:h,gcash:gcash,number:num,date:new Date().toLocaleString()}); save(); alert("Success! "+gcash+" GCash pending!"); closeConvert();
 }
-
-function getUserId(){try{if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user) return 'tg_'+Telegram.WebApp.initDataUnsafe.user.id;}catch(e){} let s=localStorage.getItem('my_telegram_id'); if(s) return s; let n='user_'+Math.floor(Math.random()*1000000); localStorage.setItem('my_telegram_id',n); return n;}
-function openInvite(){document.getElementById('inviteModal').style.display='flex'; let uid=getUserId(); let link="https://t.me/Honeyfarmget_bot?start="+uid; document.getElementById('inviteLink').innerText=link; document.getElementById('inviteCount').innerText=invites.length;}
+function openInvite(){document.getElementById('inviteModal').style.display='flex'; let uid=USER_ID; let link="https://t.me/Honeyfarmget_bot?start="+uid; document.getElementById('inviteLink').innerText=link; document.getElementById('inviteCount').innerText=invites.length;}
 function closeInvite(){document.getElementById('inviteModal').style.display='none';}
 function copyInvite(){let t=document.getElementById('inviteLink').innerText;navigator.clipboard.writeText(t).then(()=>alert("Copied!"));}
-function shareInvite(){let t=document.getElementById('inviteLink').innerText;let m="🐝 Play HoneyFarm! 10M=10 GCash! Min 50 GCash! "+t; if(navigator.share){navigator.share({text:m});}else{navigator.clipboard.writeText(m);alert("Copied!");}}
-function checkInviteReward(){try{let u=new URLSearchParams(window.location.search);let s=u.get('tgWebAppStartParam')||u.get('start'); if(s&&s!==getUserId()&&!invites.includes(s)){invites.push(s); addHoney(20000); alert("Welcome! +20k!"); save();}}catch(e){}}
-function saveToLeaderboard(){let uid=getUserId(); let name="Player"; try{if(window.Telegram&&Telegram.WebApp.initDataUnsafe.user) name=Telegram.WebApp.initDataUnsafe.user.first_name||"Player";}catch(e){} let ex=leaderboard.find(p=>p.id===uid); if(ex){ex.honey=honey;ex.name=name;}else{leaderboard.push({id:uid,name:name,honey:honey});} leaderboard.sort((a,b)=>b.honey-a.honey); leaderboard=leaderboard.slice(0,20); localStorage.setItem('honeyfarm_leaderboard',JSON.stringify(leaderboard));}
-function openLeaderboard(){saveToLeaderboard(); document.getElementById('leaderboardModal').style.display='flex'; let list=document.getElementById('leaderboardList'); if(leaderboard.length===0){list.innerHTML="<p>Wala pay player!</p>";return;} let html=""; leaderboard.forEach((p,i)=>{let medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`; let isMe=p.id===getUserId()?" (IKAW)":""; html+=`<div style="padding:8px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;${isMe?'background:#FFF9C4;font-weight:bold':''}"><span>${medal} ${p.name}${isMe}</span><span><b>${p.honey.toLocaleString()}</b></span></div>`;}); list.innerHTML=html;}
+function shareInvite(){let t=document.getElementById('inviteLink').innerText;let m="🐝 Play HoneyFarm! Min 50 GCash! "+t; if(navigator.share){navigator.share({text:m});}else{navigator.clipboard.writeText(m);alert("Copied!");}}
+function checkInviteReward(){try{let u=new URLSearchParams(window.location.search);let s=u.get('tgWebAppStartParam')||u.get('start'); if(s&&s!==USER_ID&&!invites.includes(s)){invites.push(s); addHoney(20000); alert("Welcome! +20k!"); save();}}catch(e){}}
+function saveToLeaderboard(){let uid=USER_ID; let name="Player"; try{if(window.Telegram&&Telegram.WebApp.initDataUnsafe.user) name=Telegram.WebApp.initDataUnsafe.user.first_name||"Player";}catch(e){} let ex=leaderboard.find(p=>p.id===uid); if(ex){ex.honey=honey;ex.name=name;}else{leaderboard.push({id:uid,name:name,honey:honey});} leaderboard.sort((a,b)=>b.honey-a.honey); leaderboard=leaderboard.slice(0,20); localStorage.setItem('honeyfarm_leaderboard',JSON.stringify(leaderboard));}
+function openLeaderboard(){saveToLeaderboard(); document.getElementById('leaderboardModal').style.display='flex'; let list=document.getElementById('leaderboardList'); if(leaderboard.length===0){list.innerHTML="<p>Wala pay player!</p>";return;} let html=""; leaderboard.forEach((p,i)=>{let medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`; let isMe=p.id===USER_ID?" (IKAW)":""; html+=`<div style="padding:8px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;${isMe?'background:#FFF9C4;font-weight:bold':''}"><span>${medal} ${p.name}${isMe}</span><span><b>${p.honey.toLocaleString()}</b></span></div>`;}); list.innerHTML=html;}
 function closeLeaderboard(){document.getElementById('leaderboardModal').style.display='none';}
-setInterval(()=>{saveToLeaderboard();},10000);
+
 updateUI(); checkQuestReset(); checkInviteReward(); saveToLeaderboard();
 if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
+
 setInterval(()=>{
-  let last=parseInt(localStorage.getItem('lastPetClaim')||'0');
+  let last=parseInt(localStorage.getItem(KEY_LAST_CLAIM)||'0');
   let now=Date.now();
   if(now-last>3600000){
     let total=0;
@@ -125,7 +181,7 @@ setInterval(()=>{
     });
     if(total>0){
       addHoney(total);
-      localStorage.setItem('lastPetClaim',now.toString());
+      localStorage.setItem(KEY_LAST_CLAIM,now.toString());
     }
   }
 },60000);
