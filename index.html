@@ -3,35 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HoneyFarm Pro</title>
+<title>HoneyFarm Top 3 Prize</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-body{background:linear-gradient(#FFF9C4,#FFCC80);font-family:sans-serif;text-align:center;margin:0;padding:15px}
-.card{background:white;border-radius:20px;padding:15px;margin:10px;box-shadow:0 4px 10px rgba(0,0,0,.2)}
-#honey{font-size:42px;font-weight:bold;color:#F57F17}
-button{background:#FFB300;border:none;padding:12px 20px;border-radius:12px;font-weight:bold;margin:5px;width:90%}
-button:active{transform:scale(.95)}
-#bee{font-size:70px;animation:fly 2s infinite}
-@keyframes fly{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+body{background:linear-gradient(#FFF9C4,#FFB300);font-family:sans-serif;text-align:center;margin:0;padding:10px}
+.card{background:white;border-radius:18px;padding:12px;margin:8px;box-shadow:0 3px 8px rgba(0,0,0,.2)}
+#honey{font-size:44px;font-weight:bold;color:#E65100}
+button{background:#FFB300;border:none;padding:13px;border-radius:12px;font-weight:bold;margin:4px;width:92%}
+.prize{background:linear-gradient(#FF1744,#D50000);color:white;padding:15px;border-radius:15px;margin:10px;font-weight:bold}
+.rank1{color:gold;font-weight:bold}.rank2{color:silver;font-weight:bold}.rank3{color:#CD7F32;font-weight:bold}
 </style>
 </head>
 <body>
+
+<div class="prize">
+🏆 WEEKLY PRIZES 🏆<br>
+🥇 Top 1: 1,000 GCASH<br>
+🥈 Top 2: 500 GCASH<br>
+🥉 Top 3: 250 GCASH<br>
+<small>Sunday 8PM Cut-off - Manual Verification</small>
+</div>
+
 <div class="card">
-<h2>🍯 HoneyFarm Pro 🐝</h2>
-<div id="bee">🐝</div>
+<h3>🍯 HoneyFarm Pro</h3>
+<div style="font-size:60px">🐝</div>
 <div id="honey">0</div>
-<small>Honey Points (For Fun Only)</small>
-<p>🐝 Bees: <span id="bees">1</span> | ⚡ <span id="per">1</span>/sec</p>
+<small>Honey Points</small>
+<p>Bees: <span id="bees">1</span> | <span id="per">1</span>/sec</p>
 </div>
 
 <div class="card">
 <button onclick="collect()">🌼 COLLECT +1</button>
-<button onclick="buyBee(1)">Buy Bee Lv1 (50)</button>
-<button onclick="buyBee(2)">Buy Bee Lv2 (150) +3/sec</button>
-<button onclick="daily()">🎁 Daily Bonus +20</button>
-<button onclick="invite()">👥 Invite Friends</button>
+<button onclick="buyBee()">🏪 Buy Bee (50)</button>
+<button onclick="daily()">🎁 Daily +20</button>
+<button onclick="showBoard()">🏆 Leaderboard & Prizes</button>
+<button onclick="claim()">📩 Claim Prize</button>
 </div>
-<p style="font-size:10px">Version 2 - Points only, no real money withdrawal.</p>
+
+<div class="card" id="board" style="display:none"></div>
+<p style="font-size:8px">Entertainment only. Weekly contest with manual verification by owner. Not guaranteed income. Play responsibly.</p>
+
 <script>
 let honey=parseInt(localStorage.getItem('honey')||'75');
 let bees=parseInt(localStorage.getItem('bees')||'1');
@@ -42,16 +53,19 @@ document.getElementById('bees').innerText=bees;
 document.getElementById('per').innerText=per;
 localStorage.setItem('honey',honey);localStorage.setItem('bees',bees);localStorage.setItem('per',per);
 }
-function collect(){honey+=1;update()}
-function buyBee(lv){
-if(lv==1&&honey>=50){honey-=50;bees+=1;per+=1;update()}
-else if(lv==2&&honey>=150){honey-=150;bees+=1;per+=3;update()}
-else alert('Kulang pa honey boss!')}
-function daily(){
-let last=localStorage.getItem('daily')||0;
-if(Date.now()-last>86400000){honey+=20;localStorage.setItem('daily',Date.now());update();alert('Daily +20! 🎁')}else alert('Balik ugma boss!')}
-function invite(){let link='https://t.me/Honeyfarmget_bot';navigator.clipboard.writeText(link);alert('Link copied! Share mo sa friends: '+link)}
-setInterval(()=>{honey+=per;update()},1000);
+function collect(){honey+=1;update();}
+function buyBee(){if(honey>=50){honey-=50;bees++;per++;update();}else alert('Kulang pa boss!');}
+function daily(){let l=localStorage.getItem('daily')||0;if(Date.now()-l>86400000){honey+=20;localStorage.setItem('daily',Date.now());update();alert('Daily +20!')}else alert('Balik ugma!');}
+function showBoard(){
+let b=document.getElementById('board');b.style.display='block';
+b.innerHTML='<h4>🏆 Weekly Prizes</h4><p class=rank1>🥇 Top 1: 1,000 GCASH</p><p class=rank2>🥈 Top 2: 500 GCASH</p><p class=rank3>🥉 Top 3: 250 GCASH</p><hr><p>Your Points: <b>'+honey+'</b></p><p>Cut-off: Sunday 8PM</p><p>Need: Screenshot + 3 invites</p><p>Owner verifies via @Honeyfarmget_bot</p>';
+}
+function claim(){
+let user=Telegram.WebApp.initDataUnsafe.user?.username||'No username';
+let msg='Boss claim ko prize! Top 3 contest! Honey: '+honey+' Username: @'+user;
+Telegram.WebApp.openTelegramLink('https://t.me/Honeyfarmget_bot?text='+encodeURIComponent(msg));
+}
+setInterval(()=>{honey+=per;update();},1000);
 update();Telegram.WebApp.ready();Telegram.WebApp.expand();
 </script>
 </body>
